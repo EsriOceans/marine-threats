@@ -6,10 +6,7 @@
   Original Author: Matthew Perry and Shaun Walbirdge 
   ArcGIS port: Shaun Walbridge
 
-python $PROJECT_DIR/code/threats/threat_model.py $PROJECT_DIR/data/matrices/generated/all_med_annual_sst.csv model_all_med_annual_sst
-
-
-
+python $PROJECT_DIR/code/threats/threat_model_arcgis.py $PROJECT_DIR/data/matrices/generated/all_med_annual_sst.csv model_all_med_annual_sst
 """
 
 # ArcGIS implementation
@@ -33,7 +30,7 @@ def setupEnvironment():
     # set environmental variables we'll need
     
     env.compression = 'LZW'
-    # XXX this should be a knob
+    # FIXME this should be a knob
     env.overwriteOutput = False
     # options at http://help.arcgis.com/en/arcgisdesktop/10.0/help/index.html#//001w0000001w000000.htm
     env.pyramid = "NONE"
@@ -66,8 +63,8 @@ def parseMatrix(matrix_file):
             #arcpy.AddMessage("%s = %s" % (habitats[j], values[j]))
             matrix[habitats[j]][threat] = float(values[j])
     arcpy.AddMessage("  matrix threats found: %i" % len(threats))
-    #arcpy.AddMessage(threats)
-#   print matrix
+    # arcpy.AddMessage(threats)
+    # print matrix
     return (matrix, habitats, threats)
 
 def assignMatrixRasters(habitats, threats, habitats_dir, threats_dir):
@@ -93,9 +90,8 @@ def assignMatrixRasters(habitats, threats, habitats_dir, threats_dir):
             names[name] = raster
         
         arcpy.AddMessage("  raster %s found: %i" % (type, len(names)))
-        #arcpy.AddMessage(names)
         for raster in rasters[type].keys():
-            # XXX what file types will be take in? do we need to check for all known types that
+            # TODO what file types will be take in? do we need to check for all known types that
             # ArcGIS handles, or just a constrained set? 
     
             # check the file exists on disk
@@ -103,7 +99,6 @@ def assignMatrixRasters(habitats, threats, habitats_dir, threats_dir):
                 arcpy.AddError("Missing %s!\n'%s' present in matrix, but no raster found." % (type, raster))
                 sys.exit(1)
             else:
-                #arcpy.AddMessage(names[raster])
                 rasters[type][raster] = Raster(names[raster])
     return rasters
 
@@ -124,7 +119,6 @@ def generateCombos(habitats, threats, rasters, output_dir):
         arcpy.AddError("Failed to create directory for combos: %s" % combo_dir)
         sys.exit(1)
 
-    # XXX
     """
     for habitat, data in matrix.items():
         for threat in data.keys():
@@ -137,9 +131,9 @@ def generateCombos(habitats, threats, rasters, output_dir):
             threat_raster = rasters['threats'][threat]
             habitat_raster = rasters['habitats'][habitat]
 
-            # XXX for now, skip existing
+            # FIXME: for now, skip existing
             if not name in rasters_on_disk:
-                #arcpy.AddMessage("  writing: %s" % name)
+                # arcpy.AddMessage("  writing: %s" % name)
                 # both the inputs are cast as rasters, use 'em directly
                 combo = threat_raster * habitat_raster
 
@@ -147,7 +141,7 @@ def generateCombos(habitats, threats, rasters, output_dir):
                 # by looking at the extension. Sweet! 
                 arcpy.env.compression = 'LZW'
                 arcpy.CopyRaster_management(combo, name)
-                #combo_compressed.save(name)
+                # combo_compressed.save(name)
             else:
                 pass
                 #arcpy.AddMessage("  skipping existing: %s" % name)
@@ -161,7 +155,6 @@ def generateCombos(habitats, threats, rasters, output_dir):
 def processAllCombos(matrix, output_dir):
     habitat_combos = []
 
-    # XXX this should all be pushed to a def
     combo_dir = "/".join([output_dir, 'combos'])
 
     # Make sure our output directory has a spot for the habitat_combos
@@ -217,7 +210,6 @@ def processAllCombos(matrix, output_dir):
         arcpy.AddError("Existing model detected, overwrite not enabled: %s" % model_name)
 
 def doExtraSteps():
-    # XXX
     """ extra analysis required for this process."""
 
     # statistics?
@@ -239,11 +231,11 @@ if __name__ == "__main__":
         arcpy.AddError("Usage: threat_model_arcgis.py habitats_dir threats_dir matrix.csv output_dir")
         sys.exit(1)
 
-    # XXX this should be replaced with a class, but this'll do for now.
+    # TODO this should be replaced with a class, but this'll do for now.
     (matrix, habitats, threats) = parseMatrix(matrix_file)
 
     # check that all matrix items exist on the disk...
-    # XXX should use matrix directly instead of habs & threats, in class model.
+    # FIXME should use matrix directly instead of habs & threats, in class model.
     rasters = assignMatrixRasters(habitats, threats, habitats_dir, threats_dir)
 
     # generate combos, in the past this was handled in a separate step but needs to be done here
@@ -251,7 +243,7 @@ if __name__ == "__main__":
     
     processAllCombos(matrix, output_dir)
 
-    # XXX we also want to generate the footprint maps, perhaps other things?
+    # FIXME we also want to generate the footprint maps, perhaps other things?
     # review the notes on this one...
     doExtraSteps()
 
