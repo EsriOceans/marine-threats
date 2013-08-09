@@ -216,20 +216,9 @@ def doExtraSteps():
     # footprint?
     return
 
-if __name__ == "__main__":
-
+def main(habitats_dir, threats_dir, matrix_file, output_dir):
     # set up the environment
     setupEnvironment()
-
-    try:
-        habitats_dir = arcpy.GetParameterAsText(0)
-        threats_dir = arcpy.GetParameterAsText(1)
-        matrix_file = arcpy.GetParameterAsText(2)
-        output_dir = arcpy.GetParameterAsText(3)
-    except:
-        arcpy.AddError(arcpy.GetMessages(2))
-        arcpy.AddError("Usage: threat_model_arcgis.py habitats_dir threats_dir matrix.csv output_dir")
-        sys.exit(1)
 
     # TODO this should be replaced with a class, but this'll do for now.
     (matrix, habitats, threats) = parseMatrix(matrix_file)
@@ -247,7 +236,14 @@ if __name__ == "__main__":
     # review the notes on this one...
     doExtraSteps()
 
-    # return the license
-    arcpy.CheckInExtension("Spatial")
+if __name__ == "__main__":
+    try:
+        habitats_dir = sys.argv[1]
+        threats_dir = sys.argv[2]
+        matrix_file = sys.argv[3]
+        output_dir = sys.argv[4]
+    except:
+        print arcpy.GetMessages(2)
+        print "Usage: threat_model_arcgis.py habitats_dir threats_dir matrix.csv output_dir"
+        sys.exit(1)
 
-    arcpy.AddMessage("Script Finished Successfully")
