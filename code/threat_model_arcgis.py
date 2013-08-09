@@ -112,11 +112,12 @@ def generateCombos(habitats, threats, rasters, output_dir):
     try:
         combo_dir = os.path.sep.join([output_dir, 'combos'])
         if not os.path.exists(combo_dir):
-            os.mkdir(combo_dir)
+            os.makedirs(combo_dir)
         env.workspace = combo_dir
         rasters_on_disk = arcpy.ListRasters()
-    except:
+    except Exception as e:
         arcpy.AddError("Failed to create directory for combos: %s" % combo_dir)
+        arcpy.AddError("Exception: %s" % e)
         sys.exit(1)
 
     """
