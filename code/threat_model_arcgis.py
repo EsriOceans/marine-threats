@@ -110,7 +110,7 @@ def generateCombos(habitats, threats, rasters, output_dir):
     
     # Make sure our output directory has a spot for the combos
     try:
-        combo_dir = "/".join([output_dir, 'combos'])
+        combo_dir = os.path.sep.join([output_dir, 'combos'])
         if not os.path.exists(combo_dir):
             os.mkdir(combo_dir)
         env.workspace = combo_dir
@@ -197,7 +197,7 @@ def processAllCombos(matrix, output_dir):
         #    arcpy.AddMessage("  skipping existing %s" % habitat_combo_name)
 
     env.workspace = hab_dir
-    model_name = "\\".join([output_dir, 'MODEL.tif'])
+    model_name = os.path.sep.join([output_dir, 'MODEL.tif'])
     model_results = 0
 
     if not os.path.exists(model_name):
